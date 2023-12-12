@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-semibold text-gray-800">My Orders</h1>
+    {% if orders %}
+        <div class="mt-8">
+            {% for order in orders %}
+                <div class="mb-8 border p-4 rounded-md">
+                    <h2 class="text-xl font-semibold text-gray-800">Order ID: {{ order.order_id }}</h2>
+                    <p class="text-gray-600">Date: {{ order.order_date }}</p>
+                    
+                    <!-- Customer Information -->
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold">Customer Information:</h3>
+                        <p class="mb-2">Name: {{ order.full_name }}</p>
+                        <p class="mb-2">Email: {{ order.email }}</p>
+                        <p class="mb-2">Mobile: {{ order.mobile }}</p>
+                        <p>Address: {{ order.address }}, {{ order.city }}, {{ order.state }} {{ order.pin_code }}</p>
+                    </div>
+
+                    <!-- Display order items -->
+                    <div class="mt-4">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th class="py-2">Product</th>
+                                    <th class="py-2">Quantity</th>
+                                    <th class="py-2">Price</th>
+                                    <th class="py-2">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order_item in order.orderitem_set.all %}
+                                    <tr>
+                                        <td class="py-2">
+                                            <div class="flex items-center">
+                                                <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="w-12 h-12 object-cover rounded mr-2">
+                                                <span>{{ order_item.product.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-2">{{ order_item.quantity }}</td>
+                                        <td class="py-2">{{ order_item.price }}</td>
+                                        <td class="py-2">{{ order_item.total }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold">Order Summary:</h3>
+                        <p class="mb-2">Total: {{ order.total }}</p>
+                        <p>Payment Method: {{ order.payment_method }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="mt-8 text-lg text-gray-600">No orders found.</p>
+    {% endif %}
+{% endblock %}

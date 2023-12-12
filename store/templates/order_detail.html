@@ -1,0 +1,70 @@
+<!-- templates/orders/order_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Detail{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto my-8">
+        <h1 class="text-3xl font-bold mb-4">Order Details - {{ order.order_id }}</h1>
+
+        <div class="border-b border-gray-300 pb-4 mb-6">
+            <h2 class="text-xl font-semibold mb-2">Customer Information</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div><span class="font-bold">Name:</span> {{ order.full_name }}</div>
+                <div><span class="font-bold">Email:</span> {{ order.email }}</div>
+                <div><span class="font-bold">Mobile:</span> {{ order.mobile }}</div>
+                <div><span class="font-bold">Address:</span> {{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.pin_code }}</div>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-xl font-semibold mb-2">Ordered Products</h2>
+            <table class="min-w-full mb-6">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 bg-gray-200">Product</th>
+                        <th class="py-2 px-4 bg-gray-200">Price</th>
+                        <th class="py-2 px-4 bg-gray-200">Quantity</th>
+                        <th class="py-2 px-4 bg-gray-200">Total</th>
+                        <th class="py-2 px-4 bg-gray-200">Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in order_items %}
+                        <tr>
+                            <td class="py-2 px-4">{{ order_item.product.name }}</td>
+                            <td class="py-2 px-4">{{ order_item.price }}</td>
+                            <td class="py-2 px-4">{{ order_item.quantity }}</td>
+                            <td id="total-{{ order_item.id }}" class="py-2 px-4"></td>
+                            <td class="py-2 px-4">
+                                <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="w-12 h-12 object-cover">
+                            </td>
+                        </tr>
+                        <script>
+                            // Fetch total order value for each order item using JavaScript
+                            (async function() {
+                                const response = await fetch(`/get_order_item_total/${order_item.id}/`);
+                                const data = await response.json();
+                                document.getElementById('total-{{ order_item.id }}').innerText = data.total.toFixed(2);
+                            })();
+                        </script>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="flex justify-end">
+                <p id="order-total" class="text-xl font-semibold">Total Order Value: {{ order.total|floatformat:2 }}</p>
+            </div>
+
+            <script>
+                // Fetch total order value for the entire order
+                (async function() {
+                    const response = await fetch(`/get_order_total/{{ order.order_id }}/`);
+                    const data = await response.json();
+                    document.getElementById('order-total').innerText = `Total Order Value: ${data.total.toFixed(2)}`;
+                })();
+            </script>
+        </div>
+    </div>
+{% endblock %}

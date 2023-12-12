@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Dashboard{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-semibold text-gray-800 text-center">Order Dashboard</h1>
+    <div class="mt-8 mx-auto max-w-4xl"> {# Adjust max width as needed #}
+        {% if orders %}
+            {% for order in orders %}
+                <div class="mb-8 border p-4 rounded-md shadow-md">
+                    <p class="text-xl font-semibold text-gray-800">Order ID: {{ order.order_id }}</p>
+                    <div class="flex flex-wrap -mx-2">
+                        <div class="w-full sm:w-1/2 md:w-2/3 lg:w-3/4 px-2">
+                            <div class="mt-4">
+                                <h3 class="text-lg font-semibold mb-2">Order Items:</h3>
+                                <ul class="list-unstyled">
+                                    {% for order_item in order.orderitem_set.all %}
+                                        <li class="d-flex align-items-center mb-2">
+                                            <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="w-8 h-8 rounded-circle mr-2">
+                                            <span>{{ order_item.product.name }} ({{ order_item.quantity }})</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="mt-4">
+                                <h3 class="text-lg font-semibold mb-2">Order Summary:</h3>
+                                <p><strong>Total:</strong> {{ order.total }}</p>
+                                <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+                            </div>
+                            <div class="mt-4">
+                                <h3 class="text-lg font-semibold mb-2">Shipping Status:</h3>
+                                <p>{{ order.shipping_status }}</p>
+                                <!-- Add a dropdown or other UI for updating shipping status -->
+                            </div>
+                        </div>
+                        <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2">
+                            <p><strong>Customer:</strong> {{ order.full_name }}</p>
+                            <p><strong>Email:</strong> {{ order.email }}</p>
+                            <p><strong>Mobile:</strong> {{ order.mobile }}</p>
+                            <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.state }} {{ order.pin_code }}</p>
+                            <!-- Add more customer information fields as needed -->
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="mt-8 text-lg text-gray-600 text-center">No orders found.</p>
+        {% endif %}
+    </div>
+{% endblock %}

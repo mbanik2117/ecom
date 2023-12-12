@@ -1,0 +1,104 @@
+<!-- base.html -->
+
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ecommerce{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    {% block additional_css %}
+    <style>
+        /* Custom styles for the dropdown menu */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            min-width: 160px;
+            z-index: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            display: block;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
+    {% endblock %}
+</head>
+
+<body class="font-sans bg-gray-100">
+    <nav class="bg-white shadow">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between h-16">
+                <form action="{% url 'search' %}" method="get" class="flex items-center">
+                    <input type="text" name="q" placeholder="Search products..." class="border rounded-md px-2 py-1 focus:outline-none focus:ring focus:border-blue-300">
+                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-md">Search</button>
+                </form>
+                <a href="{% url 'home' %}" class="text-2xl font-bold text-gray-800">InstaComm</a>
+
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <span class="text-gray-800 hover:text-gray-600 cursor-pointer">Account</span>
+                            <div class="dropdown-content">
+                                <a href="{% url 'logout' %}">Sign Out</a>
+                                <a href="{% url 'my_profile' %}">My Profile</a>
+                                <a href="{% url 'my_orders' %}">My Orders</a>
+                                
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'signup' %}" class="text-gray-800 hover:text-gray-600">Sign Up</a>
+                        <a href="{% url 'login' %}" class="text-gray-800 hover:text-gray-600">Login</a>
+                        <a href="{% url 'forgot_password' %}" class="text-gray-800 hover:text-gray-600">Forgot Password</a>
+                    {% endif %}
+                    <!-- My Cart button -->
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'cart' %}" class="bg-blue-500 text-white px-4 py-2 rounded-md">My Cart</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="bg-blue-500 text-white px-4 py-2" >My Cart</a>
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8">
+        {% block content %}{% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha384-..."
+        crossorigin="anonymous"></script>
+        <!-- Add this to the end of your body section -->
+
+    
+</body>
+
+</html>

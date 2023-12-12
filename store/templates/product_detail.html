@@ -1,0 +1,134 @@
+<!-- product.html -->
+
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="container mx-auto mt-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-84 object-cover rounded-md mb-4">
+            </div>
+            <div>
+                <h1 class="text-3xl font-semibold text-gray-800">{{ product.name }}</h1>
+                <p class="text-gray-600">{{ product.description }}</p>
+                <p class="text-gray-800 font-bold">{{ product.price }}</p>
+                <button class="bg-gray-800 text-white hover:bg-gray-600 mt-4 px-6 py-2 rounded-md add-to-cart-btn"  data-product-id="{{ product.id }}"
+                data-product-name="{{ product.name }}"
+                data-product-price="{{ product.price }}">Add to Cart</button>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800">Product Reviews</h2>
+            <ul>
+                {% for review in reviews %}
+                    <li class="mb-4">
+                        <p class="text-gray-600">{{ review.comment }}</p>
+                        <p class="text-gray-800 font-bold">{{ review.user.username }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% block title %}Product Detail{% endblock %}
+    {% block additional_scripts %}
+        <!-- Additional JavaScript specific to the home template -->
+        <!-- Updated Add to Cart JavaScript using Fetch API -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.addEventListener('click', async function (event) {
+                    function getCSRFToken() {
+                const csrfCookie = document.cookie
+                    .split("; ")
+                    .find((cookie) => cookie.startsWith("csrftoken="));
+    
+                if (csrfCookie) {
+                    return csrfCookie.split("=")[1];
+                }
+    
+                // If the CSRF token cookie is not found, call Django's get_token function
+                return django.middleware.csrf.get_token();
+            }
+    
+                    // Check if the clicked element has the 'add-to-cart-btn' class
+                    if (event.target.classList.contains('add-to-cart-btn')) {
+                        try {
+                            // Check if the user is authenticated
+                            // (you might need to handle this on the server side as well)
+                            const response = await fetch('{% url "check_authentication" %}', {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken(),
+                                },
+                                credentials: 'same-origin',
+                            });
+    
+                            if (!response.ok) {
+                                throw new Error('User not authenticated');
+                            }
+    
+                            // Extract product details from the clicked button
+                            const productId = event.target.dataset.productId;
+                            const productName = event.target.dataset.productName;
+                            const productPrice = event.target.dataset.productPrice;
+                            console.log('Product ID:', productId);
+                            console.log('Product Name:', productName);
+                            console.log('Product Price:', productPrice);
+    
+                            // Add the product to the server-side cart
+                            const addToCartResponse = await fetch('/add_to_cart/' + productId + '/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken(),
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                                body: JSON.stringify({
+                                    product_id: productId,
+                                    quantity: 1,
+                                }),
+                            });
+    
+                            if (!addToCartResponse.ok) {
+                                throw new Error('Failed to add product to cart');
+                            }
+    
+                            // Optional: Display a message or update the UI to indicate successful addition to cart
+                            alert(`${productName} added to cart!`);
+    
+                            // Fetch the user's cart data from the server
+                            const cartResponse = await fetch('/get_user_cart/', {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken(),
+                                },
+                                credentials: 'same-origin',
+                            });
+    
+                            let cartData = {};
+    
+                            if (cartResponse.ok) {
+                                cartData = await cartResponse.json();
+                            } else {
+                                console.error('Failed to fetch cart data');
+                            }
+    
+                            // Redirect to the cart page with the updated cart data
+                            window.location.href = '/cart/';
+    
+                        } catch (error) {
+                            console.error('Error adding to cart:', error);
+                            if (error.response) {
+                                console.error('Error response:', await error.response.json());
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+        {% endblock %}
+ 
+    {% endblock %}

@@ -1,0 +1,23 @@
+<!-- templates/search_results.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 class="text-2xl font-semibold mb-4">Search Results for "{{ query }}"</h2>
+
+    {% if results %}
+        <div class="grid grid-cols-3 gap-4">
+            {% for product in results %}
+                <div class="border p-4">
+                    <a href="{% url 'product_detail' product.id %}">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="mb-2 max-w-full h-auto">
+                        <h3 class="text-lg font-semibold">{{ product.name }}</h3>
+                    </a>
+                    <!-- Add other product details here -->
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+{% endblock %}
