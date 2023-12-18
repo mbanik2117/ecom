@@ -84,16 +84,6 @@ def user_login(request):
     return render(request, 'login.html')
 
 
-
-@permission_classes([IsAuthenticated])
-class CustomLogoutView(RedirectView):
-    url = reverse_lazy('home')  # Change 'home' to your desired URL
-
-    def get(self, request, *args, **kwargs):
-        logout(request)
-        return super().get(request, *args, **kwargs)
-
-
 @permission_classes([AllowAny])
 def forgot_password(request):
     # You can add any additional logic here if needed
