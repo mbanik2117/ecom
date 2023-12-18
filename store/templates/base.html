@@ -63,7 +63,11 @@
                         <div class="dropdown">
                             <span class="text-gray-800 hover:text-gray-600 cursor-pointer">Account</span>
                             <div class="dropdown-content">
-                                <a href="{% url 'logout' %}">Sign Out</a>
+                                <form method="post" action="{% url 'custom_logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Logout</button>
+                                </form>
+                                
                                 <a href="{% url 'my_profile' %}">My Profile</a>
                                 <a href="{% url 'my_orders' %}">My Orders</a>
                                 
