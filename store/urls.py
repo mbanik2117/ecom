@@ -4,13 +4,12 @@ from store import views
 from store.views import user_signup, user_login, forgot_password,search_view, get_user_cart,CheckAuthenticationView, get_cart_item, place_order, order_detail
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import CustomLogoutView
-
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('signup/', user_signup, name='signup'),
     path('login/', user_login, name='login'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
+    path('auth/logout/', LogoutView.as_view(next_page='home'), name='custom_logout'),
     path('forgot_password/', forgot_password, name='forgot_password'),
     path('search/', search_view, name='search'),
     path('my-profile/', views.my_profile, name='my_profile'),
