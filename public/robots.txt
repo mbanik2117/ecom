@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.shopstrider.com
+
+# Sitemaps
+Sitemap: https://www.shopstrider.com/sitemap.xml
